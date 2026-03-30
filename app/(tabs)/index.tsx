@@ -25,6 +25,12 @@ export default function Index() {
       >
         Sign Up
       </Link>
+      <Link
+        href={"/subscriptions/spotify"}
+        className="mt-4 rounded bg-success text-white p-4"
+      >
+        Spotify
+      </Link>
     </View>
   );
 }
