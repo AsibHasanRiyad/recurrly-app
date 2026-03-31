@@ -32,21 +32,30 @@ const SubscriptionCard = ({
     >
       <View className="sub-head">
         <View className="sub-main">
-          <Image source={icon} className="sub-icon" />
+          {icon ? (
+            <Image source={icon} className="sub-icon" />
+          ) : (
+            <View className="sub-icon sub-icon-fallback" />
+          )}
           <View className="sub-copy">
             <Text numberOfLines={1} className="sub-title">
-              {name}
+              {name?.trim() || "Untitled subscription"}
             </Text>
             <Text numberOfLines={1} ellipsizeMode="tail" className="sub-meta">
               {category?.trim() ||
                 plan?.trim() ||
-                (renewalDate ? formatSubscriptionDateTime(renewalDate) : "")}
+                (renewalDate ? formatSubscriptionDateTime(renewalDate) : "") ||
+                "No additional details"}
             </Text>
           </View>
         </View>
         <View className="sub-price-box">
-          <Text className="sub-price">{formatCurrency(price, currency)}</Text>
-          <Text className="sub-billing">{billing}</Text>
+          <Text className="sub-price">
+            {price !== undefined && price !== null
+              ? formatCurrency(price, currency)
+              : "N/A"}
+          </Text>
+          <Text className="sub-billing">{billing?.trim() || "N/A"}</Text>
         </View>
       </View>
       {expanded && (
@@ -60,7 +69,7 @@ const SubscriptionCard = ({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {paymentMethod?.trim()}
+                  {paymentMethod?.trim() || "Unknown"}
                 </Text>
               </View>
             </View>
@@ -72,7 +81,7 @@ const SubscriptionCard = ({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {category?.trim() || plan?.trim()}
+                  {category?.trim() || plan?.trim() || "Uncategorized"}
                 </Text>
               </View>
             </View>
@@ -84,7 +93,9 @@ const SubscriptionCard = ({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {startDate ? formatSubscriptionDateTime(startDate) : ""}
+                  {startDate
+                    ? formatSubscriptionDateTime(startDate)
+                    : "Unknown"}
                 </Text>
               </View>
             </View>
@@ -96,7 +107,9 @@ const SubscriptionCard = ({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {renewalDate ? formatSubscriptionDateTime(renewalDate) : ""}
+                  {renewalDate
+                    ? formatSubscriptionDateTime(renewalDate)
+                    : "Unknown"}
                 </Text>
               </View>
             </View>
@@ -108,7 +121,7 @@ const SubscriptionCard = ({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {status ? formatStatusLabel(status) : ""}
+                  {status ? formatStatusLabel(status) : "Unknown"}
                 </Text>
               </View>
             </View>

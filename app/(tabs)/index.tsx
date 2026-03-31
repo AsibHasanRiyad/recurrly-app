@@ -7,19 +7,23 @@ import {
   HOME_USER,
   UPCOMING_SUBSCRIPTIONS,
 } from "@/constants/data";
-import { icons } from "@/constants/icons";
 import images from "@/constants/images";
 import { formatCurrency } from "@/lib/utils";
+import { useClerk, useUser } from "@clerk/expo";
 import dayjs from "dayjs";
 import { styled } from "nativewind";
 import { useState } from "react";
-import { FlatList, Image, Text, View } from "react-native";
+import { FlatList, Image, Pressable, Text, View } from "react-native";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
+
 const SafeAreaView = styled(RNSafeAreaView);
 export default function App() {
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<
     string | null
   >(null);
+  const { user } = useUser();
+  const { signOut } = useClerk();
+  console.log(user, "user");
   return (
     <SafeAreaView className=" flex-1 bg-background p-5">
       <FlatList
@@ -47,13 +51,31 @@ export default function App() {
           <>
             <View className="home-header">
               <View className="home-user">
-                <Image source={images.avatar} className="home-avatar" />
-                <Text className=" home-user-name">{HOME_USER.name}</Text>
+                <Image
+                  source={{
+                    uri: user?.imageUrl || images.avatar,
+                  }}
+                  className="home-avatar"
+                />
+                <View className="pl-2.5 text-start">
+                  <Text className=" home-user-name">
+                    {user?.firstName && user?.lastName
+                      ? `${user.firstName} ${user.lastName}`
+                      : user?.firstName || HOME_USER.name}
+                  </Text>
+                  <Text className="text-xs text-gray-500 font-sans-regular">
+                    {user?.emailAddresses?.[0]?.emailAddress ?? "No email"}
+                  </Text>
+                </View>
               </View>
-              <Image
-                source={icons.add}
-                className=" border-gray-300 rounded-full p-2 border-2 home-add-icon"
-              />
+              <View className="flex-row justify-end items-center">
+                <Pressable
+                  onPress={() => signOut()}
+                  className="bg-primary rounded-lg px-4 py-2"
+                >
+                  <Text className="text-white font-semibold">Sign Out</Text>
+                </Pressable>
+              </View>
             </View>
             <View className="home-balance-card">
               <Text className=" home-balance-label">Balance</Text>
@@ -83,7 +105,7 @@ export default function App() {
                 }
               />
             </View>
-            <ListHeading title="All Subscription" />
+            <ListHeading title="All Subscriptions" />
           </>
         )}
       />
