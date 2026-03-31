@@ -1,5 +1,5 @@
 import { useAuth, useSignIn } from "@clerk/expo";
-import { Link, useRouter } from "expo-router";
+import { Link, Redirect, useRouter } from "expo-router";
 import React from "react";
 import {
   KeyboardAvoidingView,
@@ -31,7 +31,7 @@ export default function SignInPage() {
       await signIn.finalize({
         navigate: ({ decorateUrl }) => {
           const url = decorateUrl("/");
-          router.push(url as any);
+          router.replace(url as any);
         },
       });
     } else if (signIn.status === "needs_client_trust") {
@@ -52,7 +52,7 @@ export default function SignInPage() {
       await signIn.finalize({
         navigate: ({ decorateUrl }) => {
           const url = decorateUrl("/");
-          router.push(url as any);
+          router.replace(url as any);
         },
       });
     } else {
@@ -61,8 +61,7 @@ export default function SignInPage() {
   };
 
   if (isSignedIn) {
-    void router.push("/(tabs)");
-    return null;
+    return <Redirect href="/(tabs)" />;
   }
 
   if (signIn.status === "needs_client_trust") {
