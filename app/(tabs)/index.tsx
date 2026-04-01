@@ -1,15 +1,17 @@
+import CreateSubscriptionModal from "@/components/CreateSubscriptionModal";
 import ListHeading from "@/components/ListHeading";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import UpcomingSubscriptionsCard from "@/components/UpcomingSubscriptionsCard";
 import {
   HOME_BALANCE,
-  HOME_SUBSCRIPTIONS,
   HOME_USER,
   UPCOMING_SUBSCRIPTIONS,
 } from "@/constants/data";
+import { icons } from "@/constants/icons";
 import images from "@/constants/images";
+import { useSubscriptions } from "@/contexts/SubscriptionsContext";
 import { formatCurrency } from "@/lib/utils";
-import { useClerk, useUser } from "@clerk/expo";
+import { useUser } from "@clerk/expo";
 import dayjs from "dayjs";
 import { styled } from "nativewind";
 import { useState } from "react";
@@ -21,13 +23,20 @@ export default function App() {
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<
     string | null
   >(null);
+  const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+  const { subscriptions, addSubscription } = useSubscriptions();
+
   const { user } = useUser();
-  const { signOut } = useClerk();
-  console.log(user, "user");
+
   return (
     <SafeAreaView className=" flex-1 bg-background p-5">
+      <CreateSubscriptionModal
+        visible={isCreateModalVisible}
+        onClose={() => setIsCreateModalVisible(false)}
+        onCreate={addSubscription}
+      />
       <FlatList
-        data={HOME_SUBSCRIPTIONS}
+        data={subscriptions}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <SubscriptionCard
@@ -68,14 +77,12 @@ export default function App() {
                   </Text>
                 </View>
               </View>
-              <View className="flex-row justify-end items-center">
-                <Pressable
-                  onPress={() => signOut()}
-                  className="bg-primary rounded-lg px-4 py-2"
-                >
-                  <Text className="text-white font-semibold">Sign Out</Text>
-                </Pressable>
-              </View>
+              <Pressable
+                onPress={() => setIsCreateModalVisible(true)}
+                className="border-gray-300 rounded-full p-2 border-2"
+              >
+                <Image source={icons.add} className="home-add-icon" />
+              </Pressable>
             </View>
             <View className="home-balance-card">
               <Text className=" home-balance-label">Balance</Text>
@@ -89,7 +96,11 @@ export default function App() {
               </View>
             </View>
             <View className="mb-5">
-              <ListHeading title="Upcoming" />
+              <ListHeading
+                button_link="/subscriptions"
+                button_text="See All"
+                title="Upcoming"
+              />
               <FlatList
                 data={UPCOMING_SUBSCRIPTIONS}
                 renderItem={({ item }) => (
@@ -105,7 +116,11 @@ export default function App() {
                 }
               />
             </View>
-            <ListHeading title="All Subscriptions" />
+            <ListHeading
+              button_link="/subscriptions"
+              button_text="See All"
+              title="All Subscriptions"
+            />
           </>
         )}
       />
